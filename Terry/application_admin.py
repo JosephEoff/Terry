@@ -4,7 +4,7 @@ from camelot.admin.application_admin import ApplicationAdmin
 from camelot.admin.section import Section
 from camelot.core.utils import ugettext_lazy as _
 
-from Terry.model import PhysioEvent,  Profile,  DeviceModel
+from Terry.model import PhysioEvent,  Profile,  DeviceModel,  ImportedDataSets
 
 class TerryAdmin(ApplicationAdmin):
   
@@ -29,7 +29,7 @@ class TerryAdmin(ApplicationAdmin):
                 Section( _('Maintenance'),
                           self,
                           Icon('tango/22x22/apps/system-users.png'),
-                          items = [DeviceModel] ),
+                          items = [DeviceModel,  ImportedDataSets] ),
                  Section( _('Configuration'),
                           self,
                           Icon('tango/22x22/categories/preferences-system.png'),

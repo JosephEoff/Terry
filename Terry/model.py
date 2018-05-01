@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
     
 from camelot.admin.entity_admin import EntityAdmin
 from camelot.admin.validator.entity_validator import EntityValidator
-from camelot.core.orm import Entity,   ManyToOne,  OneToMany,  OneToOne,  ManyToMany
+from camelot.core.orm import Entity,   ManyToOne,  OneToMany,  OneToOne,  ManyToMany,  belongs_to,  has_many
 from Terry.DataImport import PAPDataImporter
 
 class Profile( Entity ):
@@ -38,18 +38,25 @@ class PhysioEvent(Entity):
     Event=Column(Unicode(60), nullable = False)
     Start=Column(DateTime)
     End=Column(DateTime)
-    Value=Column(Float)
+    Pressure=Column(Float)
+    Strength=Column(Float)
     
     class Admin(EntityAdmin):
         verbose_name = 'Physio Event'
-        list_display = ['Device','Event', 'Start', 'End', 'Value']
+        list_display = ['Device','Event', 'Start', 'End', 'Pressure', 'Strength']
         validator=PhysioEventValidator
 
 class ImportedDataSets(Entity):
     __tablename__= 'importeddatasets'
-    Device_id=Column(Integer, ForeignKey('owneddevice.id'))
-    Device=relationship( 'OwnedDevice',  backref = 'importeddatasets' )
+    belongs_to('Device', of_kind='OwnedDevice')
     DataSetID=Column(Unicode(400))
+    
+    def __unicode__(self):
+        return  self.DataSetID
+    
+    class Admin(EntityAdmin):
+        verbose_name = 'Imported Dataset'
+        list_display = ['Device', 'DataSetID']
     
 class OwnedDevice(Entity):
     __tablename__='owneddevice'
@@ -58,13 +65,14 @@ class OwnedDevice(Entity):
     model_id = Column( Integer, ForeignKey('devicetypes.id') )
     Modelname = relationship( 'DeviceModel',  backref = 'owneddevice' )
     ImportPath =Column(Unicode(400))
+    has_many('ImportedDataSetIDs', of_kind='ImportedDataSets')
     
     def __unicode__(self):
         return  self.SerialNumber
     
     class Admin( EntityAdmin ):
         verbose_name = 'Devices'
-        list_display = ['SerialNumber',  'Modelname', 'ImportPath'] 
+        list_display = ['SerialNumber',  'Modelname', 'ImportPath',   'ImportedDataSetIDs'] 
         form_actions = [PAPDataImporter()]
 
 class DeviceModel(Entity):
