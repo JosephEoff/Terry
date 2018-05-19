@@ -4,7 +4,7 @@ from camelot.admin.application_admin import ApplicationAdmin
 from camelot.admin.section import Section
 from camelot.core.utils import ugettext_lazy as _
 
-from Terry.model import PhysioEvent,  Profile,  DeviceModel,  ImportedDataSets
+from Terry.model import PhysioEvent,  Profile,  DeviceModel,  ImportedDataSets,  ModelType
 
 class TerryAdmin(ApplicationAdmin):
   
@@ -20,19 +20,19 @@ class TerryAdmin(ApplicationAdmin):
         #handiconpath=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'hands.png')
         return [ Section( _('Terry'),
                           self,
-                          Icon('tango/22x22/apps/system-users.png'),
+                          Icon(''),
                           items = [Profile] ),
                     Section( _('Data'),
                           self,
-                          Icon('tango/22x22/apps/system-users.png'),
+                          Icon(''),#'tango/22x22/apps/system-users.png'),
                           items = [PhysioEvent] ),
                 Section( _('Maintenance'),
                           self,
-                          Icon('tango/22x22/apps/system-users.png'),
-                          items = [DeviceModel,  ImportedDataSets] ),
+                          Icon(''),#'''tango/22x22/apps/system-users.png'),
+                          items = [DeviceModel,  ModelType,  ImportedDataSets] ),
                  Section( _('Configuration'),
                           self,
-                          Icon('tango/22x22/categories/preferences-system.png'),
+                          Icon(''),#'tango/22x22/categories/preferences-system.png'),
                           items = [Memento, Translation] )
                 ]
     

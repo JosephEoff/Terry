@@ -7,22 +7,23 @@ from sqlalchemy.orm import relationship
     
 from camelot.admin.entity_admin import EntityAdmin
 from camelot.admin.validator.entity_validator import EntityValidator
-from camelot.core.orm import Entity,   ManyToOne,  OneToMany,  OneToOne,  ManyToMany,  belongs_to,  has_many
+from camelot.core.orm import Entity,   ManyToOne,  OneToMany,  OneToOne,  ManyToMany,  belongs_to,  has_many,  has_one,    has_and_belongs_to_many
 from Terry.DataImport import PAPDataImporter
 
 class Profile( Entity ):
     __tablename__ = 'profile'
-    Name = Column( Unicode(60), nullable = False )
-    Devices=OneToMany('OwnedDevice')
+    LastName = Column( Unicode(60), nullable = False )
+    FirstName = Column( Unicode(60), nullable = False )
     DateOfBirth = Column(Date)
+    Devices=OneToMany('OwnedDevice')
     
     def __unicode__(self):
         return self.Name
     
     class Admin( EntityAdmin ):
         verbose_name = 'Profile'
-        list_display = ['Name',  'DateOfBirth']
-        form_display = forms.TabForm([('Profile', forms.Form(['Name', 'DateOfBirth','Devices',]))])
+        list_display = ['LastName', 'FirstName',   'DateOfBirth']
+        form_display = forms.TabForm([('Profile', forms.Form(['LastName', 'FirstName','DateOfBirth','Devices',]))])
 
 class PhysioEventValidator(EntityValidator):
     def objectValidity(self, entity_instance):
@@ -78,6 +79,7 @@ class OwnedDevice(Entity):
 class DeviceModel(Entity):
     __tablename__ = 'devicetypes'
     ModelName = Column( Unicode(60), nullable = False )
+    belongs_to('Type', of_kind='ModelType')
     
     def __unicode__(self):
         return self.ModelName or 'None'
@@ -85,3 +87,31 @@ class DeviceModel(Entity):
     class Admin( EntityAdmin ):
         verbose_name = 'PAP Model'
         list_display = ['ModelName']
+
+class ModelType(Entity):
+    __tablename__ = 'modeltypes'
+    Type = Column( Unicode(60), nullable = False )
+    has_many('DeviceModels', of_kind='DeviceModel')
+    has_many('Events',  of_kind='EventTypes')
+    
+    def __unicode__(self):
+        return self.ModelName or 'None'
+    
+    class Admin( EntityAdmin ):
+        verbose_name = 'Model Type'
+        list_display = ['Type', 'DeviceModels',  'Events']
+        
+class EventTypes(Entity):
+    __tablename__ = 'eventtypes'
+    TypeID = Column( Unicode(60), nullable = False )
+    Name = Column(Unicode(60), nullable=False)
+    Description = Column(Unicode(300), nullable=True)    
+    belongs_to('ModelType', of_kind='ModelType')
+    
+    def __unicode__(self):
+        return self.ModelName or 'None'
+    
+    class Admin( EntityAdmin ):
+        verbose_name = 'Event Type'
+        list_display = ['TypeID', 'Name',  'Description']
+    
